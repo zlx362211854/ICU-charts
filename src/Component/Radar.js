@@ -68,7 +68,7 @@ export default class Radar extends Component {
   };
   render() {
     return (
-      <div id="icu-radar-charts" style={{ width: '40%', height: '500px' }} />
+      <div id="icu-radar-charts" style={{ width: '20%', height: '500px' }} />
     );
   }
 }
