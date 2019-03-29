@@ -3,8 +3,11 @@ import echarts from 'echarts';
 import { china } from '../lib/china';
 export default class Map extends Component {
   componentWillReceiveProps(newProps) {
-    const { data = [] } = newProps;
-    this.initMapChart(data);
+    const {data = []} = newProps;
+    const {data: prevData} = this.props;;
+    if (prevData.length != data.length) {
+      this.initMapChart(data);
+    }
   }
   initMapChart = data => {
     const _this = this;

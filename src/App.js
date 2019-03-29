@@ -43,7 +43,7 @@ class App extends Component {
     });
   };
   render() {
-    const { tableData, columns, noData, allData, currentData = {} } = this.state;
+    const { tableData, columns, noData, allData = [], currentData = {} } = this.state;
     return (
       <div className="App" style={{ padding: '20px' }}>
         {noData && <p>没有数据...</p>}

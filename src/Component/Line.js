@@ -3,8 +3,11 @@ import echarts from 'echarts';
 import {map} from '../lib/opt';
 export default class Line extends Component {
   componentWillReceiveProps(newProps) {
-    const { data = [] } = newProps;
-    this.initLineChart(data);
+    const {data = []} = newProps;
+    const {data: prevData} = this.props;;
+    if (prevData.length != data.length) {
+      this.initLineChart(data);
+    }
   }
   initLineChart = data => {
     const dom = document.getElementById('icu-line-charts');

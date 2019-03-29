@@ -3,8 +3,11 @@ import echarts from 'echarts';
 import {mapReverse, salary, rest} from '../lib/opt';
 export default class Bar extends Component {
   componentWillReceiveProps(newProps) {
-    const { data = [] } = newProps;
-    this.initBarchart(data);
+    const {data = []} = newProps;
+    const {data: prevData} = this.props;;
+    if (prevData.length != data.length) {
+      this.initBarchart(data);
+    }
   }
   initBarchart = data => {
     const _this = this;
