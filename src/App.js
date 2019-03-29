@@ -48,11 +48,11 @@ class App extends Component {
         return resp.clone().json();
       })
       .then(res => {
-        console.log(res, 'res');
         if (res && res instanceof Array) {
           const data = res.map(i => i.wide);
           this.initLineChart(data);
           this.initMapChart(data);
+          this.initBarchart(data);
         } else {
           this.setState({
             noData: true
@@ -66,7 +66,8 @@ class App extends Component {
 
     const option = {
       title: {
-        text: '加班情况'
+        text: '加班情况统计折线图',
+        subtext: '数据来自https://cloudqa.iego.cn/sr/icu996'
       },
       tooltip: {
         trigger: 'item',
@@ -109,6 +110,9 @@ class App extends Component {
       ]
     };
     myChart.setOption(option);
+    myChart.on('click', function(params) {
+      // const {  } = params;
+    });
   };
   initMapChart = data => {
     const _this = this;
@@ -163,7 +167,8 @@ class App extends Component {
 
     const option = {
       title: {
-        text: '区域分布'
+        text: '区域分布',
+        subtext: '数据来自https://cloudqa.iego.cn/sr/icu996'
       },
       tooltip: {
         trigger: 'item',
@@ -229,6 +234,78 @@ class App extends Component {
     });
     myChart.on('georoam', function(params) {});
   };
+  initBarchart = data => {
+    const cityArr = data.map(i => i.Q1);
+    const dom = document.getElementById('icu-bar-charts');
+    const myChart = echarts.init(dom);
+    const option = {
+      title: {
+        text: '加班情况统计条形图',
+        subtext: '数据来自https://cloudqa.iego.cn/sr/icu996'
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+        formatter: val => {
+          const Q4 = val[0]; // 加班情况
+          const Q5 = val[1]; // 加班工资
+          const Q6 = val[0]; // 加班调休
+          return `公司名称：${Q4.name}<br/>加班情况：${
+            map[Q4.value]
+          }<br/>加班工资：${salary[Q5.value]}<br/>加班调休：${rest[Q6.value]}`;
+        },
+        extraCssText: 'text-align: left'
+      },
+      xAxis: {
+        type: 'value'
+      },
+      yAxis: {
+        type: 'category',
+        data: cityArr,
+        axisLabel: {
+          formatter: value => {
+            return value.slice(0, 4) + '...';
+          }
+        }
+      },
+      dataZoom: [
+        {
+          type: 'slider',
+          show: true,
+          yAxisIndex: [0],
+          left: '93%',
+          start: 29,
+          end: 30
+        },
+        {
+          type: 'inside',
+          yAxisIndex: [0],
+          start: 29,
+          end: 30
+        }
+      ],
+      series: [
+        {
+          name: '加班情况',
+          type: 'bar',
+          data: data.map(i => i.Q4[0])
+        },
+        {
+          name: '加班工资',
+          type: 'bar',
+          data: data.map(i => i.Q5[0])
+        },
+        {
+          name: '加班调休',
+          type: 'bar',
+          data: data.map(i => i.Q6[0])
+        }
+      ]
+    };
+    myChart.setOption(option);
+  };
   render() {
     const { tableData, columns, noData } = this.state;
     return (
@@ -236,10 +313,17 @@ class App extends Component {
         {noData && <p>没有数据...</p>}
         {!noData && (
           <div>
-            <div
-              id="icu-line-charts"
-              style={{ width: '100%', height: '500px' }}
-            />
+            <div style={{ display: 'flex' }}>
+              <div
+                id="icu-line-charts"
+                style={{ width: '50%', height: '500px' }}
+              />
+              <div
+                id="icu-bar-charts"
+                style={{ width: '50%', height: '500px' }}
+              />
+            </div>
+
             <div style={{ display: 'flex' }}>
               <div
                 id="icu-map-charts"
