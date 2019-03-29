@@ -22,7 +22,7 @@ export default class Radar extends Component {
           const Q4 = val.data.value[0]; // 加班情况
           const Q5 = val.data.value[1]; // 加班工资
           const Q6 = val.data.value[2]; // 加班调休
-          return `加班情况：<br/>${mapReverse[Q4]}<br/>加班工资：${
+          return `${data.Q1}:<br/>加班情况：${mapReverse[Q4]}<br/>加班工资：${
             salary[Q5]
           }<br/>加班调休：${rest[Q6]}`;
         },

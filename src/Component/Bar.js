@@ -27,7 +27,7 @@ export default class Bar extends Component {
         formatter: val => {
           const Q4 = val[0]; // 加班情况
           const Q5 = val[1]; // 加班工资
-          const Q6 = val[0]; // 加班调休
+          const Q6 = val[2]; // 加班调休
           return `公司名称：${Q4.name}<br/>加班情况：${
             mapReverse[Q4.value]
           }<br/>加班工资：${salary[Q5.value]}<br/>加班调休：${
