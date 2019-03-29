@@ -3,9 +3,42 @@ import echarts from 'echarts';
 import './App.css';
 import 'echarts/map/js/china';
 import { china } from './china';
+import DetailsTable from './Component/DetailsTable';
 const map = { 1: '经常996', 2: '偶尔996', 3: '不996' };
+const salary = { 1: '两倍以上', 2: '小于两倍', 3: '没有' };
+const rest = { 1: '可以调休', 2: '原则上可以调休', 3: '不可以' };
 class App extends Component {
-  state = {};
+  state = {
+    columns: [
+      {
+        Header: '公司名称',
+        accessor: 'Q1'
+      },
+      {
+        Header: '部门',
+        accessor: 'Q2'
+      },
+      {
+        Header: '职位',
+        accessor: 'Q3'
+      },
+      {
+        Header: '加班情况',
+        accessor: 'Q4',
+        Cell: props => <span>{map[props.value]}</span>
+      },
+      {
+        Header: '加班工资',
+        accessor: 'Q5',
+        Cell: props => <span>{salary[props.value]}</span>
+      },
+      {
+        Header: '加班调休',
+        accessor: 'Q6',
+        Cell: props => <span>{rest[props.value]}</span>
+      }
+    ]
+  };
   componentDidMount() {
     this.getData();
   }
@@ -15,9 +48,16 @@ class App extends Component {
         return resp.clone().json();
       })
       .then(res => {
-        const data = res.map(i => i.wide);
-        this.initLineChart(data);
-        this.initMapChart(data);
+        console.log(res, 'res');
+        if (res && res instanceof Array) {
+          const data = res.map(i => i.wide);
+          this.initLineChart(data);
+          this.initMapChart(data);
+        } else {
+          this.setState({
+            noData: true
+          });
+        }
       });
   };
   initLineChart = data => {
@@ -71,7 +111,8 @@ class App extends Component {
     myChart.setOption(option);
   };
   initMapChart = data => {
-    const dom = document.getElementById('icu-radar-charts');
+    const _this = this;
+    const dom = document.getElementById('icu-map-charts');
     const myChart = echarts.init(dom);
     const city = china.map(i => i.children);
     let coordMap = [];
@@ -131,26 +172,15 @@ class App extends Component {
             data: { data = [] },
             name
           } = val;
-          const arr = [`${name}区域加班情况：`];
-          data.forEach(i => {
-            switch (i.Q4[0]) {
-              case 1:
-                arr.push(`${i.Q1}：<span style='color: #ee7a30'>${map[i.Q4[0]]}</span>`);
-                break;
-              case 2:
-                arr.push(`${i.Q1}：<span style='color: #f8d047'>${map[i.Q4[0]]}</span>`);
-                break;
-              case 3:
-                arr.push(`${i.Q1}：<span style='color: #baddaa'>${map[i.Q4[0]]}</span>`);
-                break;
-            }
-          });
-          return arr.join('<br/>');
+          return `${name}区域加班情况：<br/> 共有<span style='color: #f8d047'>${
+            data.length
+          }</span>家公司，点击查看详情`;
         },
         extraCssText: 'text-align: left'
       },
       geo: {
         map: 'china',
+        roam: true,
         label: {
           emphasis: {
             show: false
@@ -191,12 +221,36 @@ class App extends Component {
       ]
     };
     myChart.setOption(option);
+    myChart.on('click', function(params) {
+      const { data: { data } = {} } = params;
+      _this.setState({
+        tableData: data
+      });
+    });
+    myChart.on('georoam', function(params) {});
   };
   render() {
+    const { tableData, columns, noData } = this.state;
     return (
       <div className="App">
-        <div id="icu-line-charts" style={{ width: '100%', height: '500px' }} />
-        <div id="icu-radar-charts" style={{ width: '100%', height: '500px' }} />
+        {noData && <p>没有数据...</p>}
+        {!noData && (
+          <div>
+            <div
+              id="icu-line-charts"
+              style={{ width: '100%', height: '500px' }}
+            />
+            <div style={{ display: 'flex' }}>
+              <div
+                id="icu-map-charts"
+                style={{ width: '50%', height: '500px' }}
+              />
+              <div style={{ width: '50%', height: '500px' }}>
+                <DetailsTable data={tableData} columns={columns} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
