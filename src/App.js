@@ -37,13 +37,14 @@ class App extends Component {
       currentData: data
     });
   };
-  setTableData = data => {
+  setTableData = (data, name) => {
     this.setState({
-      tableData: data
+      tableData: data,
+      tableName: name
     });
   };
   render() {
-    const { tableData, columns, noData, allData = [], currentData = {} } = this.state;
+    const { tableData, columns, noData, allData = [], currentData = {}, tableName = '' } = this.state;
     return (
       <div className="App" style={{ padding: '20px' }}>
         {noData && <p>没有数据...</p>}
@@ -58,7 +59,7 @@ class App extends Component {
             <div style={{ display: 'flex' }}>
               <Map data={allData} setTableData={this.setTableData} />
               <div style={{ width: '50%', height: '500px' }}>
-                <DetailsTable data={tableData} />
+                <DetailsTable data={tableData} tableName={tableName}/>
               </div>
             </div>
           </div>

@@ -122,8 +122,8 @@ export default class Map extends Component {
     };
     myChart.setOption(option);
     myChart.on('click', function(params) {
-      const {data: {data} = {}} = params;
-      _this.props.setTableData(data);
+      const {data: {data} = {}, name} = params;
+      _this.props.setTableData(data, name);
     });
     myChart.on('georoam', function(params) {});
   };
